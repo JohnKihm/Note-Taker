@@ -33,7 +33,12 @@ app.post('/api/notes', (req, res) => {
 
         postNote(newNote);
 
-        res.status(201);
+        const response = {
+            status: 'success',
+            body: newNote
+        };
+
+        res.status(201).json(response);
     } else {
         res.status(500).json('Error in posting note');
     }
@@ -42,6 +47,8 @@ app.post('/api/notes', (req, res) => {
 app.delete('/api/notes/:id', (req, res) => {
     const deletedNoteId = req.params.id;
     deleteNote(deletedNoteId);
+
+    res.status(200).json('success');
 });
 
 app.get('*', (req, res) =>
