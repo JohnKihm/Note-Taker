@@ -27,6 +27,30 @@ app.get('/api/notes', (req, res) => {
     })
 });
 
+app.post('/api/notes', (req, res) => {
+    const { title, text } = req.body;
+
+    if (title && text) {
+        const newNote = {
+            title,
+            text,
+            id: uuidv4()
+        };
+
+        fs.readFile('./db/db.json', 'utf8', (err, data) => {
+            if (err) {
+                console.err(err);
+                return;
+            } else {
+                const parsedNotes = JSON.parse(data);
+                parsedNotes.push(newNote);
+                fs.writeFile('./db/db.json', JSON.stringify(parsedNotes, null, 4), (err) =>
+                    err ? console.error(err) : console.info('Note successfully added'));
+            }
+        });
+    }
+});
+
 app.get('*', (req, res) =>
     res.sendFile(path.join(__dirname, '/public/index.html'))
 );
