@@ -1,7 +1,7 @@
 const express = require('express');
 const path = require('path');
 const { v4: uuidv4 } = require('uuid');
-const fs = require('fs');
+const { readFromFile, postNote } = require('./helpers/fileFunctions');
 const PORT = process.env.port || 3001;
 
 const app = express();
@@ -16,15 +16,9 @@ app.get('/notes', (req, res) =>
 );
 
 app.get('/api/notes', (req, res) => {
-    fs.readFile('./db/db.json', 'utf8', (err, data) => {
-        if (err) {
-            console.err(err);
-            return;
-        } else {
-            const parsedNotes = JSON.parse(data);
-            res.json(parsedNotes);
-        }
-    })
+    readFromFile('./db/db.json').then((data) => {
+        res.json(JSON.parse(data));
+    });
 });
 
 app.post('/api/notes', (req, res) => {
@@ -37,17 +31,11 @@ app.post('/api/notes', (req, res) => {
             id: uuidv4()
         };
 
-        fs.readFile('./db/db.json', 'utf8', (err, data) => {
-            if (err) {
-                console.err(err);
-                return;
-            } else {
-                const parsedNotes = JSON.parse(data);
-                parsedNotes.push(newNote);
-                fs.writeFile('./db/db.json', JSON.stringify(parsedNotes, null, 4), (err) =>
-                    err ? console.error(err) : console.info('Note successfully added'));
-            }
-        });
+        postNote(newNote);
+
+        res.status(201);
+    } else {
+        res.status(500).json('Error in posting note');
     }
 });
 
