@@ -1,7 +1,7 @@
 const express = require('express');
 const path = require('path');
 const { v4: uuidv4 } = require('uuid');
-const { readFromFile, postNote } = require('./helpers/fileFunctions');
+const { readFromFile, postNote, deleteNote } = require('./helpers/fileFunctions');
 const PORT = process.env.port || 3001;
 
 const app = express();
@@ -37,6 +37,11 @@ app.post('/api/notes', (req, res) => {
     } else {
         res.status(500).json('Error in posting note');
     }
+});
+
+app.delete('/api/notes/:id', (req, res) => {
+    const deletedNoteId = req.params.id;
+    deleteNote(deletedNoteId);
 });
 
 app.get('*', (req, res) =>

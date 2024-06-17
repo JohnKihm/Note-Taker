@@ -17,4 +17,17 @@ function postNote(newNote) {
     })
 }
 
-module.exports = { readFromFile, postNote };
+function deleteNote(id) {
+    readFromFile('./db/db.json').then((data) => {
+        parsedNotes = JSON.parse(data);
+        for (let i = 0; i < parsedNotes.length; i++) {
+            if (parsedNotes[i].id === id) {
+                parsedNotes.splice(i, 1);
+            }
+        }
+        fs.writeFile('./db/db.json', JSON.stringify(parsedNotes, null, 4), (err) =>
+            err ? console.error(err) : console.info('Note successfully deleted'));
+    });
+}
+
+module.exports = { readFromFile, postNote, deleteNote };
